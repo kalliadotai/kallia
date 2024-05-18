@@ -1,9 +1,11 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 
 class SQLQueryOutputModel(BaseModel):
-    data: str
+    query: str
+    result: Optional[List[Dict[str, Any]]] = []
+    answer: Optional[str] = ""
 
 
 class SQLQueryExampleModel(BaseModel):
@@ -33,6 +35,7 @@ class SQLQueryTableModel(BaseModel):
     columns: List[SQLQueryColumnModel]
     primary_keys: Optional[List[str]] = []
     foreign_keys: Optional[List[SQLQueryForeignKeyModel]] = []
+    url: Optional[str] = ""
 
 
 class SQLQueryModel(BaseModel):
