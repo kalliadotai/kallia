@@ -12,17 +12,27 @@ load_dotenv()
 
 
 class ExtractionChain:
-    def invoke(self, data: ExtractionModel) -> ExtractionOutputModel:
+    def _extract(self, data: ExtractionModel) -> str:
         examples = json.dumps(jsonable_encoder(data.examples))
         format_instructions = json.dumps(jsonable_encoder(data.format_instructions))
         chat = ChatGroq(temperature=0, model_name=MODEL_NAME)
         prompt = ChatPromptTemplate.from_messages([("human", EXTRACTION_PROMPT)])
         chain = prompt | chat | StrOutputParser()
-        output = chain.invoke(
+        return chain.invoke(
             {
                 "question": data.question,
                 "type_description": format_instructions,
                 "examples": examples,
             }
         )
-        return ExtractionOutputModel(structured_data=json.loads(output))
+
+    def invoke(self, data: ExtractionModel) -> ExtractionOutputModel:
+        try:
+            information = self._extract(data)
+        except:
+            return ExtractionOutputModel(code=400, message="_extract error")
+        return ExtractionOutputModel(
+            code=200,
+            message="success",
+            data=json.loads(information),
+        )

@@ -9,7 +9,7 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers.string import StrOutputParser
 from app.constants import MODEL_NAME
-from app.models import SQLQueryModel, SQLQueryOutputModel
+from app.models import SQLQueryModel, SQLQueryOutputModel, SQLQueryDataModel
 from app.prompts import (
     MYSQL_PROMPT,
     POSTGRES_PROMPT,
@@ -65,7 +65,7 @@ class SQLQueryChain:
         examples = json.dumps(jsonable_encoder(data.examples))
         table_info = json.dumps(jsonable_encoder(data.tables))
         chat = ChatGroq(temperature=0, model_name=MODEL_NAME)
-        engine = "sqlite" if len(self._get_urls(data)) > 0 else data.engine
+        engine = data.engine if len(self._get_urls(data)) == 0 else "sqlite"
         prompt = ChatPromptTemplate.from_messages([("human", self._get_prompt(engine))])
         chain = prompt | chat | StrOutputParser()
         output = chain.invoke(
@@ -85,13 +85,30 @@ class SQLQueryChain:
         return chain.invoke({"question": question, "query": query, "result": result})
 
     def invoke(self, data: SQLQueryModel) -> SQLQueryOutputModel:
-        query = self._get_query(data)
-        if len(self._get_urls(data)) > 0:
-            result = self._get_result(data, query)
-            answer = self._get_answer(query, result, data.question)
+        try:
+            query = self._get_query(data)
+        except:
+            return SQLQueryOutputModel(code=400, message="_get_query error")
+        if len(self._get_urls(data)) == 0 or len(query) == 0:
             return SQLQueryOutputModel(
+                code=200,
+                message="success",
+                data=SQLQueryDataModel(query=query),
+            )
+        try:
+            result = self._get_result(data, query)
+        except:
+            return SQLQueryOutputModel(code=400, message="_get_result error")
+        try:
+            answer = self._get_answer(query, result, data.question)
+        except:
+            return SQLQueryOutputModel(code=400, message="_get_answer error")
+        return SQLQueryOutputModel(
+            code=200,
+            message="success",
+            data=SQLQueryDataModel(
                 query=query,
                 result=json.loads(result),
                 answer=answer,
-            )
-        return SQLQueryOutputModel(query=query)
+            ),
+        )

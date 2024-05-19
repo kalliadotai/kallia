@@ -2,10 +2,16 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 
-class SQLQueryOutputModel(BaseModel):
+class SQLQueryDataModel(BaseModel):
     query: str
     result: Optional[List[Dict[str, Any]]] = []
     answer: Optional[str] = ""
+
+
+class SQLQueryOutputModel(BaseModel):
+    code: int
+    message: str
+    data: Optional[SQLQueryDataModel] = None
 
 
 class SQLQueryExampleModel(BaseModel):

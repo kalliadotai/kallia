@@ -3,7 +3,9 @@ from pydantic import BaseModel
 
 
 class ExtractionOutputModel(BaseModel):
-    structured_data: Dict[str, Any]
+    code: int
+    message: str
+    data: Optional[Dict[str, Any]] = None
 
 
 class ExtractionExampleModel(BaseModel):
