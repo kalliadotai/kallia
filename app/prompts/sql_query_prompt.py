@@ -20,7 +20,7 @@ Answer: Final answer here
 
 Only use the following tables:
 
-{table_info}
+{tables}
 
 Below are a number of examples of questions and their corresponding SQL queries.
 
@@ -43,7 +43,7 @@ Answer: Final answer here
 
 Only use the following tables:
 
-{table_info}
+{tables}
 
 Below are a number of examples of questions and their corresponding SQL queries.
 
@@ -66,7 +66,7 @@ Answer: Final answer here
 
 Only use the following tables:
 
-{table_info}
+{tables}
 
 Below are a number of examples of questions and their corresponding SQL queries.
 
@@ -89,7 +89,7 @@ Answer: Final answer here
 
 Only use the following tables:
 
-{table_info}
+{tables}
 
 Below are a number of examples of questions and their corresponding SQL queries.
 
@@ -112,7 +112,7 @@ Answer: Final answer here
 
 Only use the following tables:
 
-{table_info}
+{tables}
 
 Below are a number of examples of questions and their corresponding SQL queries.
 

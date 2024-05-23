@@ -2,10 +2,14 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 
+class ExtractionDataModel(BaseModel):
+    information: Dict[str, Any]
+
+
 class ExtractionOutputModel(BaseModel):
     code: int
     message: str
-    data: Optional[Dict[str, Any]] = None
+    data: Optional[ExtractionDataModel] = None
 
 
 class ExtractionExampleModel(BaseModel):
@@ -28,4 +32,4 @@ class ExtractionFormatInstructionModel(BaseModel):
 class ExtractionModel(BaseModel):
     question: str
     format_instructions: List[ExtractionFormatInstructionModel]
-    examples: List[ExtractionExampleModel]
+    examples: Optional[List[ExtractionExampleModel]] = []

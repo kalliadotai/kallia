@@ -1,4 +1,3 @@
-import re
 import json
 import pandas as pd
 from typing import List
@@ -18,6 +17,7 @@ from app.prompts import (
     SQLITE_PROMPT,
     ANSWER_PROMPT,
 )
+from app.utils import unwrap_tag
 
 load_dotenv()
 
@@ -38,14 +38,6 @@ class SQLQueryChain:
                 urls.append(table.url)
         return urls
 
-    def _unwrap_tag(self, text: str) -> str:
-        prefix = "SQLQuery:"
-        suffix = "SQLResult"
-        pattern = f"{prefix}(.*?){suffix}"
-        content = re.compile(pattern, re.DOTALL)
-        match = content.search(text)
-        return match.group(1) if match else ""
-
     def _get_prompt(self, engine: str) -> str:
         return (
             self._sql_prompts[engine]
@@ -63,7 +55,7 @@ class SQLQueryChain:
 
     def _get_query(self, data: SQLQueryModel) -> str:
         examples = json.dumps(jsonable_encoder(data.examples))
-        table_info = json.dumps(jsonable_encoder(data.tables))
+        tables = json.dumps(jsonable_encoder(data.tables))
         chat = ChatGroq(temperature=0, model_name=MODEL_NAME)
         engine = data.engine if len(self._get_urls(data)) == 0 else "sqlite"
         prompt = ChatPromptTemplate.from_messages([("human", self._get_prompt(engine))])
@@ -72,11 +64,12 @@ class SQLQueryChain:
             {
                 "question": data.question,
                 "examples": examples,
-                "table_info": table_info,
+                "tables": tables,
                 "top_k": 5,
             }
         )
-        return " ".join(self._unwrap_tag(output).splitlines()).strip()
+        query = unwrap_tag("SQLQuery:", "SQLResult", output)
+        return " ".join(query.splitlines()).strip()
 
     def _get_answer(self, query: str, result: str, question: str) -> str:
         chat = ChatGroq(temperature=0, model_name=MODEL_NAME)

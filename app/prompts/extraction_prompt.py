@@ -2,7 +2,7 @@ EXTRACTION_PROMPT = """Your goal is to extract structured information from the u
 When extracting information please make sure it matches the type information exactly.
 Do not add any attributes that do not appear in the schema shown below.
 
-{type_description}
+{format_instructions}
 
 Please output the extracted information in JSON format.
 Do not output anything except for the extracted information.

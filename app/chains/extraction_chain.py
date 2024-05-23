@@ -5,7 +5,7 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers.string import StrOutputParser
 from app.constants import MODEL_NAME
-from app.models import ExtractionModel, ExtractionOutputModel
+from app.models import ExtractionModel, ExtractionOutputModel, ExtractionDataModel
 from app.prompts import EXTRACTION_PROMPT
 
 load_dotenv()
@@ -21,7 +21,7 @@ class ExtractionChain:
         return chain.invoke(
             {
                 "question": data.question,
-                "type_description": format_instructions,
+                "format_instructions": format_instructions,
                 "examples": examples,
             }
         )
@@ -34,5 +34,5 @@ class ExtractionChain:
         return ExtractionOutputModel(
             code=200,
             message="success",
-            data=json.loads(information),
+            data=ExtractionDataModel(information=json.loads(information)),
         )

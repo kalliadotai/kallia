@@ -47,5 +47,5 @@ class SQLQueryTableModel(BaseModel):
 class SQLQueryModel(BaseModel):
     question: str
     tables: List[SQLQueryTableModel]
-    examples: List[SQLQueryExampleModel]
+    examples: Optional[List[SQLQueryExampleModel]] = []
     engine: Optional[str] = ""
