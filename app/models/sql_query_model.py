@@ -19,10 +19,16 @@ class SQLQueryExampleModel(BaseModel):
     output: str
 
 
+class SQLQueryEnumModel(BaseModel):
+    description: Optional[str] = ""
+    value: str
+
+
 class SQLQueryColumnModel(BaseModel):
     name: str
     description: Optional[str] = ""
     type: str
+    enum: Optional[List[SQLQueryEnumModel]] = []
 
 
 class SQLQueryReferencesModel(BaseModel):

@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI
-from app.chains import SQLQueryChain, ExtractionChain, APIRequestChain
+from app.chains import SQLQueryChain, ExtractionChain, APIRequestChain, APIResponseChain
 from app.models import (
     SQLQueryModel,
     SQLQueryOutputModel,
@@ -8,6 +8,8 @@ from app.models import (
     ExtractionOutputModel,
     APIRequestModel,
     APIRequestOutputModel,
+    APIResponseModel,
+    APIResponseOutputModel,
 )
 
 app = FastAPI()
@@ -35,6 +37,14 @@ def api_request(
     data: APIRequestModel,
     chain: Annotated[APIRequestChain, Depends(APIRequestChain)],
 ) -> APIRequestOutputModel:
+    return chain.invoke(data)
+
+
+@v1.post("/api_response")
+def api_response(
+    data: APIResponseModel,
+    chain: Annotated[APIResponseChain, Depends(APIResponseChain)],
+) -> APIResponseOutputModel:
     return chain.invoke(data)
 
 
