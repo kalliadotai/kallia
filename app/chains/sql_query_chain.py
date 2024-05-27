@@ -1,7 +1,9 @@
 import json
-import pandas as pd
+import uuid
+import duckdb
+import pathlib
+from datetime import datetime
 from typing import List
-from sqlite3 import connect
 from dotenv import load_dotenv
 from fastapi.encoders import jsonable_encoder
 from langchain_groq import ChatGroq
@@ -46,12 +48,15 @@ class SQLQueryChain:
         )
 
     def _get_result(self, data: SQLQueryModel, query: str) -> str:
-        connection = connect(":memory:")
-        for table in data.tables:
-            df = pd.read_csv(table.url)
-            df.to_sql(name=table.name, con=connection)
-        df = pd.read_sql(query, connection)
-        return df.to_json(orient="records")
+        db_name = uuid.uuid4()
+        year = datetime.today().year
+        month = datetime.today().month
+        pathlib.Path(f"db/{year}/{month}").mkdir(parents=True, exist_ok=True)
+        with duckdb.connect(f"db/{year}/{month}/{db_name}.db") as con:
+            for table in data.tables:
+                con.sql(f"CREATE TABLE {table.name} AS SELECT * FROM '{table.url}'")
+            result = con.sql(query).df()
+        return result.to_json(orient="records")
 
     def _get_query(self, data: SQLQueryModel) -> str:
         examples = json.dumps(jsonable_encoder(data.examples))
