@@ -1,9 +1,17 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI
-from app.chains import SQLQueryChain, ExtractionChain, APIRequestChain, APIResponseChain
+from app.chains import (
+    SQLQueryChain,
+    SQLAnswerChain,
+    ExtractionChain,
+    APIRequestChain,
+    APIResponseChain,
+)
 from app.models import (
     SQLQueryModel,
     SQLQueryOutputModel,
+    SQLAnswerModel,
+    SQLAnswerOutputModel,
     ExtractionModel,
     ExtractionOutputModel,
     APIRequestModel,
@@ -21,6 +29,14 @@ def sql_query(
     data: SQLQueryModel,
     chain: Annotated[SQLQueryChain, Depends(SQLQueryChain)],
 ) -> SQLQueryOutputModel:
+    return chain.invoke(data)
+
+
+@v1.post("/sql_answer")
+def sql_answer(
+    data: SQLAnswerModel,
+    chain: Annotated[SQLAnswerChain, Depends(SQLAnswerChain)],
+) -> SQLAnswerOutputModel:
     return chain.invoke(data)
 
 
