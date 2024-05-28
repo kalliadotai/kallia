@@ -4,10 +4,10 @@ from fastapi.encoders import jsonable_encoder
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers.string import StrOutputParser
+from app.helpers import CommonHelper
 from app.constants import MODEL_NAME
 from app.models import APIRequestModel, APIRequestOutputModel, APIRequestDataModel
 from app.prompts import API_REQUEST_PROMPT
-from app.utils import unwrap_tag
 
 load_dotenv()
 
@@ -26,7 +26,7 @@ class APIRequestChain:
                 "examples": examples,
             }
         )
-        url = unwrap_tag("<url>", "</url>", output)
+        url = CommonHelper.unwrap_tag("<url>", "</url>", output)
         return " ".join(url.splitlines()).strip()
 
     def invoke(self, data: APIRequestModel) -> APIRequestOutputModel:

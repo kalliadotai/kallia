@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers.string import StrOutputParser
-from app import db
+from app.helpers import DatabaseHelper
 from app.constants import MODEL_NAME
 from app.models import SQLAnswerModel, SQLAnswerOutputModel, SQLAnswerDataModel
 from app.prompts import SQL_ANSWER_PROMPT
@@ -26,12 +26,12 @@ class SQLAnswerChain:
         return table_names
 
     def _get_result(self, data: SQLAnswerModel) -> str:
-        db_name = db.get_name()
-        db_path = db.get_path()
+        db_name = DatabaseHelper.get_name()
+        db_path = DatabaseHelper.get_path()
         table_names = self._get_table_names(data)
         urls = self._get_urls(data)
-        db.create(db_name, db_path, table_names, urls)
-        return db.find(db_name, db_path, data.query)
+        DatabaseHelper.create(db_name, db_path, table_names, urls)
+        return DatabaseHelper.find(db_name, db_path, data.query)
 
     def _get_answer(self, query: str, result: str, question: str) -> str:
         chat = ChatGroq(temperature=0, model_name=MODEL_NAME)
@@ -51,8 +51,5 @@ class SQLAnswerChain:
         return SQLAnswerOutputModel(
             code=200,
             message="success",
-            data=SQLAnswerDataModel(
-                result=json.loads(result),
-                answer=answer,
-            ),
+            data=SQLAnswerDataModel(result=json.loads(result), answer=answer),
         )
