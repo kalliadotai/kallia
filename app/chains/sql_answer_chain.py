@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import Any, Dict, List
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
@@ -25,13 +25,15 @@ class SQLAnswerChain:
             table_names.append(item.name)
         return table_names
 
-    def _get_result(self, data: SQLAnswerModel) -> str:
+    def _get_result(self, data: SQLAnswerModel) -> List[Dict[str, Any]]:
         db_name = DatabaseHelper.get_name()
         db_path = DatabaseHelper.get_path()
         table_names = self._get_table_names(data)
         urls = self._get_urls(data)
         DatabaseHelper.create(db_name, db_path, table_names, urls)
-        return DatabaseHelper.find(db_name, db_path, data.query)
+        output = DatabaseHelper.find(db_name, db_path, data.query)
+        result = json.loads(output)
+        return result if isinstance(result, list) else []
 
     def _get_answer(self, query: str, result: str, question: str) -> str:
         chat = ChatGroq(temperature=0, model_name=MODEL_NAME)
@@ -51,5 +53,5 @@ class SQLAnswerChain:
         return SQLAnswerOutputModel(
             code=200,
             message="success",
-            data=SQLAnswerDataModel(result=json.loads(result), answer=answer),
+            data=SQLAnswerDataModel(result=result, answer=answer),
         )
