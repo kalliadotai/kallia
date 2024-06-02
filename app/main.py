@@ -1,5 +1,6 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI
+from fastapi.staticfiles import StaticFiles
 from app.chains import (
     SQLQueryChain,
     SQLAnswerChain,
@@ -18,7 +19,10 @@ from app.models import (
     APIRequestOutputModel,
     APIResponseModel,
     APIResponseOutputModel,
+    ChartModel,
+    ChartOutputModel,
 )
+from app.services import ChartService
 
 app = FastAPI()
 v1 = FastAPI()
@@ -64,4 +68,14 @@ def api_response(
     return chain.invoke(data)
 
 
+@v1.post("/chart")
+def chart(
+    data: ChartModel,
+    service: Annotated[ChartService, Depends(ChartService)],
+) -> ChartOutputModel:
+    return service.invoke(data)
+
+
 app.mount("/api/v1", v1)
+
+app.mount("/chart", StaticFiles(directory="assets/chart"), name="chart")

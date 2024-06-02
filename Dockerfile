@@ -18,6 +18,4 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./app /code/app
 
-COPY ./db /code/db
-
 CMD ["fastapi", "run", "app/main.py", "--port", "8000"]
