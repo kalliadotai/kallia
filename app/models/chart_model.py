@@ -15,6 +15,6 @@ class ChartOutputModel(BaseModel):
 class ChartModel(BaseModel):
     type: Optional[str] = ""
     title: Optional[str] = ""
-    x: Optional[str] = ""
-    y: Optional[str] = ""
+    xlabel: Optional[str] = ""
+    ylabel: Optional[str] = ""
     data: List[Dict[str, Any]]

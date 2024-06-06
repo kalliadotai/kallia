@@ -1,7 +1,7 @@
 import uuid
 import duckdb
+import pathlib
 from typing import List
-from pathlib import Path
 from datetime import datetime
 
 
@@ -12,11 +12,11 @@ class DatabaseHelper:
 
     @staticmethod
     def get_path() -> str:
-        return f"db/{datetime.today().strftime('%Y/%m')}"
+        return f"db/{datetime.today().strftime('%y%m')}"
 
     @staticmethod
     def create(db_name: str, db_path: str, table_names: List[str], urls: List[str]):
-        Path(db_path).mkdir(parents=True, exist_ok=True)
+        pathlib.Path(db_path).mkdir(parents=True, exist_ok=True)
         with duckdb.connect(f"{db_path}/{db_name}.db") as con:
             for index, item in enumerate(table_names):
                 con.sql(f"CREATE TABLE {item} AS SELECT * FROM '{urls[index]}'")
