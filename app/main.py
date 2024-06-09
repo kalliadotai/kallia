@@ -21,8 +21,10 @@ from app.models import (
     APIResponseOutputModel,
     ChartModel,
     ChartOutputModel,
+    RerankModel,
+    RerankOutputModel,
 )
-from app.services import ChartService
+from app.services import ChartService, RerankService
 
 app = FastAPI()
 v1 = FastAPI()
@@ -73,6 +75,14 @@ def chart(
     data: ChartModel,
     service: Annotated[ChartService, Depends(ChartService)],
 ) -> ChartOutputModel:
+    return service.invoke(data)
+
+
+@v1.post("/rerank")
+def rerank(
+    data: RerankModel,
+    service: Annotated[RerankService, Depends(RerankService)],
+) -> RerankOutputModel:
     return service.invoke(data)
 
 
