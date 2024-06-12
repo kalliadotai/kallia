@@ -23,8 +23,10 @@ from app.models import (
     ChartOutputModel,
     RerankModel,
     RerankOutputModel,
+    SplitModel,
+    SplitOutputModel,
 )
-from app.services import ChartService, RerankService
+from app.services import ChartService, RerankService, SplitService
 
 app = FastAPI()
 v1 = FastAPI()
@@ -83,6 +85,14 @@ def rerank(
     data: RerankModel,
     service: Annotated[RerankService, Depends(RerankService)],
 ) -> RerankOutputModel:
+    return service.invoke(data)
+
+
+@v1.post("/split")
+def split(
+    data: SplitModel,
+    service: Annotated[SplitService, Depends(SplitService)],
+) -> SplitOutputModel:
     return service.invoke(data)
 
 

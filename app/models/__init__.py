@@ -5,3 +5,4 @@ from .api_request_model import *
 from .api_response_model import *
 from .chart_model import *
 from .rerank_model import *
+from .split_model import *
